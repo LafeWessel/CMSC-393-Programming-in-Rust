@@ -3,3 +3,8 @@
 
 # ignore all .pdf files
 *.pdf
+
+# ignore .o files
+*.o
+
+**/target/*
