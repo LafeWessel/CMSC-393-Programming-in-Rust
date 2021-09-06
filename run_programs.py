@@ -22,16 +22,13 @@ for p in proj:
     new_file.write(temp)
     new_file.close()
 
-    # run docker build .
+    # run: docker build -t project_name .
     cmd = f"docker build -t {p.lower()} ."
     os.system(cmd)
 
-    # run docker run --rm --interactive --name proj proj
+    # run: docker run --rm --interactive --name proj_name proj_name
     cmd = f"docker run --rm --interactive --name {p.lower()} {p.lower()}"
     os.system(cmd)
-
-    # remove new Dockerfile
-    os.remove("Dockerfile")
 
     # move back a directory
     os.chdir("..")
