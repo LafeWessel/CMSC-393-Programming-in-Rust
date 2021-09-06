@@ -21,23 +21,28 @@ fn main() {
     };
 
     let mut conv = temp;
-    let mut from = String::new();
-    let mut to = String::new();
+    let mut from = "";
+    let mut to = "";
 
     if choice.trim() == "cels" {
         conv = cels_to_fahr(conv);
-        from = String::from("cels");
-        to = String::from("fahr");
+        from = "cels";
+        to = "fahr";
     } else if choice.trim() == "fahr" {
         conv = fahr_to_cels(conv);
-        from = String::from("fahr");
-        to = String::from("cels");
+        from = "fahr";
+        to = "cels";
     }else{
         println!("{} neither fahr nor cels, exiting",choice);
         exit(1);
     }
 
     println!("{} {} converted to {} {}",temp,from,conv,to);
+
+    let mut t = String::new();
+    io::stdin()
+        .read_line(&mut t)
+        .expect("Unable to read line");
 }
 
 fn cels_to_fahr(t:f32) -> f32{

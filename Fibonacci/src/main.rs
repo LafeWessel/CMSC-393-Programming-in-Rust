@@ -25,6 +25,10 @@ fn main() {
         println!("Count:{}, Ans:{}, Prev:{}",i,ans,prev);
     }
     println!("{}th Fibonacci number is {}",n,ans);
+    let mut t = String::new();
+    io::stdin()
+        .read_line(&mut t)
+        .expect("Unable to read line");
 }
 
 // calculate the next fibonacci number

@@ -30,4 +30,8 @@ fn main() {
             Ordering::Less => println!("Too low!")
         }
     }
+    let mut t = String::new();
+    io::stdin()
+        .read_line(&mut t)
+        .expect("Unable to read line");
 }
