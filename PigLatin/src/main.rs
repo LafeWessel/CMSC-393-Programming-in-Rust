@@ -10,7 +10,9 @@ fn main() {
         let mut line = String::new();
         println!("Enter a series of words to change to PigLatin, or enter exit to quit");
         io::stdin().read_line(&mut line).expect("Unable to read line");
-        line.pop();
+        while line.ends_with("\r") || line.ends_with("\n"){
+            line.pop();
+        }
 
         if line == "exit"{
             break;
