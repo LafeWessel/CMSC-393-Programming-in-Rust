@@ -12,9 +12,7 @@ fn main() {
 
     io::stdin().read_line(&mut input).expect("Unable to read line");
     // remove trailing new line
-    while input.ends_with("\r") || input.ends_with("\n"){
-        input.pop();
-    }
+    input.trim();
 
     let mut strs : Vec<&str> = input.split(" ").collect();
     println!("{:?}",strs);
