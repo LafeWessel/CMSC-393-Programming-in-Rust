@@ -6,8 +6,7 @@ import glob
 
 
 def get_project_list(projects=None):
-    """Return list of all Rust project folders in current directory matching names in `projects`,
-    or all if `projects` == None, not including those with '.'"""
+    """Return list of all Rust project folders in current directory matching names in `projects`, or all if `projects` == None, not including those with '.'"""
     # get the names of all the folders in this directory, minus those with a '.'
     project_dirs = [f for f in os.listdir() if '.' not in f]
 
@@ -17,24 +16,20 @@ def get_project_list(projects=None):
     # if projects is list, is several projects
     if type(projects) is list:
         return list(set([p for d in project_dirs for p in projects if p.lower() == d.lower()]))
-    # end if
 
     # if projects is not a list, return all projects
     return project_dirs
-# end def
 
 
 # TODO implement functionality for parameters.json
 def generate_dockerfile(project_folder: str, no_overwrite=True):
-    """Generate Dockerfile in `project_folder`,
-    `no_overwrite` for determining whether to overwrite if the Dockerfile already exists"""
+    """Generate Dockerfile in `project_folder`, `no_overwrite` for determining whether to overwrite if the Dockerfile already exists"""
     dockerfile_path = os.path.join(project_folder, "Dockerfile")
 
     # return if no_overwrite == True and the Dockerfile exists
     if no_overwrite and os.path.isfile(dockerfile_path):
         print(f"Will not overwrite file {dockerfile_path}")
         return
-    # end if
 
     print(f"Generating Dockerfile for project {project_folder}")
 
@@ -51,12 +46,10 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
     if os.path.isfile(parameters_path):
         print(f"Loading data from {parameters_path}")
         data = json.load(open(parameters_path, "r"))
-    # end if
 
     new_file = open(dockerfile_path, "w")
     new_file.write(temp)
     new_file.close()
-# end def
 
 
 def run_dockerfile(project_name: str):
@@ -73,7 +66,6 @@ def run_dockerfile(project_name: str):
 
     # move back to starting_dir
     os.chdir(starting_dir)
-# end def
 
 
 def clean_dockerfile(project_name: str):
@@ -83,10 +75,8 @@ def clean_dockerfile(project_name: str):
     if os.path.isfile(dockerfile_path):
         print(f"Removing {dockerfile_path}")
         os.remove(dockerfile_path)
-    # end if
     else:
         print(f"{dockerfile_path} unable to be removed as it does not exist.")
-# end def
 
 
 def build_container(project_name: str):
@@ -103,60 +93,48 @@ def build_container(project_name: str):
 
     # jump back to starting_dir
     os.chdir(starting_dir)
-# end def
+
 
 def run_script(args):
     """Run script based on command line arguments provided"""
     if sum([args.list, args.generate, args.run, args.clean_dockerfiles, args.build]) > 1:
         print("Too many mutually exclusive arguments provided, exiting")
         exit(1)
-    # end if
 
     if args.list:
         print("ONLY Listing projects, ignoring --project parameters")
         print(get_project_list())
         exit(1)
-    # end if
 
     if args.generate:
         print("ONLY Generating Dockerfiles")
         for p in get_project_list(args.project):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
-        # end for
         exit(1)
-    # end if
 
     if args.run:
         print("ONLY Running Dockerfiles")
         for p in get_project_list(args.project):
             run_dockerfile(project_name=p)
-        # end for
         exit(1)
-    # end if
 
     if args.clean_dockerfiles:
         print("ONLY Cleaning Dockerfiles")
         for p in get_project_list(args.project):
             clean_dockerfile(project_name=p)
-        # end for
         exit(1)
-    # end if
 
     if args.build:
         print("ONLY Building Docker Containers")
         for p in get_project_list(args.project):
             build_container(project_name=p)
-        # end for
         exit(1)
-    # end if
 
     # run script normally
     for p in get_project_list(args.project):
         generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
         build_container(project_name=p)
         run_dockerfile(project_name=p)
-    # end for
-# end def
 
 
 def generate_args():
@@ -197,10 +175,8 @@ def generate_args():
                         default=False,
                         dest="build")
     return parser.parse_args()
-# end def
 
 
 if __name__ == "__main__":
     args = generate_args()
     run_script(args=args)
-# end def
