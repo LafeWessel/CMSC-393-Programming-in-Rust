@@ -5,6 +5,7 @@ import argparse
 
 # TODO add docstrings with """...""" to functions
 
+
 # TODO add more logic to determine if a directory contains a rust program
 # TODO add argument parsing for projects argument
 def get_project_list():
@@ -14,6 +15,14 @@ def get_project_list():
 
 
 def generate_dockerfile(project_folder: str, no_overwrite=True):
+    dockerfile_path = os.path.join(project_folder, "Dockerfile")
+
+    # return if no_overwrite == True and the Dockerfile exists
+    if no_overwrite and os.path.isfile(dockerfile_path):
+        print(f"Will not overwrite file {dockerfile_path}")
+        return
+    # end if
+
     print(f"Generating Dockerfile for project {project_folder}")
 
     # read in template_dockerfile
@@ -31,29 +40,19 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
         data = json.load(open(parameters_path, "r"))
     # end if
 
-    # create new Dockerfile if no_overwrite == False, or if the Dockerfile does not exist
-    if not no_overwrite or not os.path.isfile(dockerfile_path):
-        new_file = open(dockerfile_path, "w")
-        new_file.write(temp)
-        new_file.close()
-    # end if
-
-    if no_overwrite and os.path.isfile(dockerfile_path):
-        print(f"Did not overwrite file {dockerfile_path}")
-    # end if
+    new_file = open(dockerfile_path, "w")
+    new_file.write(temp)
+    new_file.close()
 # end def
 
 
 def run_dockerfile(project_name: str):
+    """Run Dockerfile from `project_name` directory"""
     print(f"Running Dockerfile for project {project_name}")
 
     # move into project_name folder
     starting_dir = os.getcwd()
     os.chdir(project_name)
-
-    # run: docker build -t project_name .
-    cmd = f"docker build -t {project_name.lower()} ."
-    assert os.system(cmd) == 1
 
     # run: docker run --rm --interactive --name proj_name proj_name
     cmd = f"docker run --rm --interactive --name {project_name.lower()} {project_name.lower()}"
@@ -63,42 +62,42 @@ def run_dockerfile(project_name: str):
     os.chdir(starting_dir)
 # end def
 
+
 def clean_dockerfile(project_name: str):
-    return
+    """Clean (Remove) Dockerfile from `project_name` directory"""
+    dockerfile_path = os.path.join(project_name, "Dockerfile")
 
-if __name__ == "__main__":
+    if os.path.isfile(dockerfile_path):
+        print(f"Removing {dockerfile_path}")
+        os.remove(dockerfile_path)
+    # end if
+    else:
+        print(f"{dockerfile_path} unable to be removed as it does not exist.")
+# end def
 
-    parser = argparse.ArgumentParser(description="Generate Dockerfiles for Rust programs and run them.")
-    parser.add_argument("-p", "--program",
-                        help="Run specific programs by name, if none provided, runs all programs",
-                        action="append",
-                        dest="program")
-    parser.add_argument("-l", "--list",
-                        help="List all local projects and exit, defaults to False, mutually exclusive with -g,-l,-c",
-                        action="store_true",
-                        default=False,
-                        dest="list")
-    parser.add_argument("-g", "--generate",
-                        help="Generate Dockerfiles and exit, defaults to False, mutually exclusive with -l,-r,-c",
-                        action="store_true",
-                        default=False,
-                        dest="generate")
-    parser.add_argument("-r", "--run",
-                        help="Run projects with existing Dockerfiles, defaults to False, mutually exclusive with -l,-g,-c",
-                        action="store_true",
-                        default=False,
-                        dest="run")
-    parser.add_argument("-n", "--no-overwrite",
-                        help="Do not overwrite already generated Dockerfiles, defaults to False",
-                        action="store_true",
-                        default=False,
-                        dest="no_overwrite")
-    parser.add_argument("-c","--clean-dockerfiles",
-                        help="Clean Dockerfiles from project directories, defaults to False, mutually exclusive with -l,-g,-r",
-                        action="store_true",
-                        default=False,
-                        dest="clean_dockerfiles")
-    args = parser.parse_args()
+
+def build_container(project_name: str):
+    """Build Docker container for `project_name` project in that directory"""
+    print(f"Building Docker container for {project_name}")
+
+    # move into project_name folder
+    starting_dir = os.getcwd()
+    os.chdir(project_name)
+
+    # run: docker build -t project_name .
+    cmd = f"docker build -t {project_name.lower()} ."
+    os.system(cmd)
+
+    # jump back to starting_dir
+    os.chdir(starting_dir)
+# end def
+
+def run_script(args):
+    """Run script based on command line arguments provided"""
+    if sum([args.list, args.generate, args.run, args.clean_dockerfiles, args.build]) > 1:
+        print("Too many mutually exclusive arguments provided, exiting")
+        exit(1)
+    # end if
 
     if args.list:
         print("ONLY Listing projects")
@@ -125,7 +124,15 @@ if __name__ == "__main__":
     if args.clean_dockerfiles:
         print("ONLY Cleaning Dockerfiles")
         for p in get_project_list():
-            clean_dockerfile(project_name = p)
+            clean_dockerfile(project_name=p)
+        # end for
+        exit(1)
+    # end if
+
+    if args.build:
+        print("ONLY Building Docker Containers")
+        for p in get_project_list():
+            build_container(project_name=p)
         # end for
         exit(1)
     # end if
@@ -134,7 +141,52 @@ if __name__ == "__main__":
     for p in get_project_list():
         generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
         run_dockerfile()
+    # end for
+# end def
 
 
+def generate_args():
+    """Generate ArgumentParser and return parsed arguments"""
+    parser = argparse.ArgumentParser(description="Generate Dockerfiles for Rust programs and run them.")
+    parser.add_argument("-p", "--program",
+                        help="Run specific programs by name, if none provided, runs all programs",
+                        action="append",
+                        dest="program")
+    parser.add_argument("-l", "--list",
+                        help="List all local projects and exit, defaults to False, mutually exclusive with -g,-l,-c,-b",
+                        action="store_true",
+                        default=False,
+                        dest="list")
+    parser.add_argument("-g", "--generate",
+                        help="Generate Dockerfiles and exit, defaults to False, mutually exclusive with -l,-r,-c,-b",
+                        action="store_true",
+                        default=False,
+                        dest="generate")
+    parser.add_argument("-r", "--run",
+                        help="Run projects with existing Dockerfiles, defaults to False, mutually exclusive with -l,-g,-c,-b",
+                        action="store_true",
+                        default=False,
+                        dest="run")
+    parser.add_argument("-n", "--no-overwrite",
+                        help="Do not overwrite already generated Dockerfiles, defaults to False, used with -g and default behavior",
+                        action="store_true",
+                        default=False,
+                        dest="no_overwrite")
+    parser.add_argument("-c","--clean-dockerfiles",
+                        help="Clean Dockerfiles from project directories, defaults to False, mutually exclusive with -l,-g,-r,-b",
+                        action="store_true",
+                        default=False,
+                        dest="clean_dockerfiles")
+    parser.add_argument("-b", "--build",
+                        help="Build Docker containers, defaults to False, mutually exclusive with -l,-g,-r,-b",
+                        action="store_true",
+                        default=False,
+                        dest="build")
+    return parser.parse_args()
+# end def
 
+
+if __name__ == "__main__":
+    args = generate_args()
+    run_script(args=args)
 # end def
