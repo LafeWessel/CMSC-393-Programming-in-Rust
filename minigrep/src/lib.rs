@@ -14,6 +14,7 @@ impl Config {
         if args.len() < 3{
             return Err("Not enough arguments provided");
         }
+        // skip fast first argument
         args.next();
         let phrase = match args.next(){
             Some(arg) => arg,
@@ -25,11 +26,14 @@ impl Config {
         };
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
+        println!("Searching {} for phrase \"{}\"", filename, phrase);
+
         return Ok(Config {phrase, filename, case_sensitive});
     }
 }
 
 pub fn run(config : Config) -> Result<(), Box<dyn Error>>{
+    println!("Lines:");
     let contents = fs::read_to_string(config.filename)?;
 
     let results = if config.case_sensitive{
