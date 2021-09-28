@@ -12,10 +12,17 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32c88cb0-430c-47a1-83d9-25ba8f5de022" name="Changes" comment="Finished minigrep project">
+    <list default="true" id="32c88cb0-430c-47a1-83d9-25ba8f5de022" name="Changes" comment="Changed minigrep to use iterators">
+      <change afterPath="$PROJECT_DIR$/../.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/CMSC 393.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/parameters.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../run_programs.py" beforeDir="false" afterPath="$PROJECT_DIR$/../run_programs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +108,9 @@
       <workItem from="1632247035635" duration="1109000" />
       <workItem from="1632249827880" duration="5554000" />
       <workItem from="1632329934694" duration="266000" />
-      <workItem from="1632697116448" duration="1038000" />
+      <workItem from="1632697116448" duration="2295000" />
+      <workItem from="1632800105306" duration="9000" />
+      <workItem from="1632801469751" duration="1318000" />
     </task>
     <task id="LOCAL-00001" summary="Updated MeanMedianMode and PigLatin to use .trim() on strings.">
       <created>1632248211945</created>
@@ -124,7 +133,14 @@
       <option name="project" value="LOCAL" />
       <updated>1632286829869</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Changed minigrep to use iterators">
+      <created>1632698896589</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1632698896590</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,6 +163,7 @@
     <MESSAGE value="Updated MeanMedianMode and PigLatin to use .trim() on strings." />
     <MESSAGE value="Added minigrep projects and initial code." />
     <MESSAGE value="Finished minigrep project" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished minigrep project" />
+    <MESSAGE value="Changed minigrep to use iterators" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed minigrep to use iterators" />
   </component>
 </project>
