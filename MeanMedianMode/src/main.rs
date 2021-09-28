@@ -12,12 +12,11 @@ fn main() {
 
     io::stdin().read_line(&mut input).expect("Unable to read line");
     // remove trailing new line
-    input.trim();
 
     let mut strs : Vec<&str> = input.split(" ").collect();
     println!("{:?}",strs);
     for s in strs.iter(){
-        nums.push(s.parse::<i32>().expect("Unable to parse num"));
+        nums.push(s.trim().parse::<i32>().expect("Unable to parse num"));
     }
     println!("MEAN:{}",mean(&nums));
     println!("MEDIAN:{}",median(&mut nums));

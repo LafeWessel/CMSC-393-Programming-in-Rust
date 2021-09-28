@@ -10,16 +10,15 @@ fn main() {
         let mut line = String::new();
         println!("Enter a series of words to change to PigLatin, or enter exit to quit");
         io::stdin().read_line(&mut line).expect("Unable to read line");
-        line.trim();
 
-        if line == "exit"{
+        if line.trim() == "exit"{
             break;
         }
         let mut words : Vec<&str> = line.split(" ").collect();
         println!("words entered:{:?}",words);
         let mut latin_words : Vec<String> = Vec::new();
         for w in words.iter() {
-            latin_words.push(latinise_word(&w));
+            latin_words.push(latinise_word(&w.trim()));
         }
         println!("Latinised words:\n{:?}",latin_words);
         latin_words.clear();
