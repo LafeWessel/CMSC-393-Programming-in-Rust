@@ -2,25 +2,25 @@ import sys
 import os
 import json
 import argparse
+import glob
 
 
-# TODO add more logic to determine if a directory contains a rust program
-def get_project_list(projects = None):
-    """Return list of all folders in current directory matching names in `projects`,
+def get_project_list(projects=None):
+    """Return list of all Rust project folders in current directory matching names in `projects`,
     or all if `projects` == None, not including those with '.'"""
-    # get the names of all the folders in this directory
+    # get the names of all the folders in this directory, minus those with a '.'
     project_dirs = [f for f in os.listdir() if '.' not in f]
 
-    # if projects is None, then no --project arguments were provided, thus return all projects
-    if type(projects) is None:
-        return project_dirs
+    # determine which project_dirs actually contain a Rust program
+    project_dirs = [p for p in project_dirs if len(glob.glob(os.path.join(p, "**", "*.rs"))) > 0]
+
     # if projects is list, is several projects
     if type(projects) is list:
         return list(set([p for d in project_dirs for p in projects if p.lower() == d.lower()]))
-    else:
-        print("Unable to determine type of projects, returning empty list")
-        return []
-    # end if-else
+    # end if
+
+    # if projects is not a list, return all projects
+    return project_dirs
 # end def
 
 
