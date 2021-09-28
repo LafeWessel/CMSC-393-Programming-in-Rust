@@ -3,18 +3,31 @@ import os
 import json
 import argparse
 
-# TODO add docstrings with """...""" to functions
-
 
 # TODO add more logic to determine if a directory contains a rust program
-# TODO add argument parsing for projects argument
-def get_project_list():
+def get_project_list(projects = None):
+    """Return list of all folders in current directory matching names in `projects`,
+    or all if `projects` == None, not including those with '.'"""
     # get the names of all the folders in this directory
-    proj = [f for f in os.listdir() if '.' not in f]
-    return proj
+    project_dirs = [f for f in os.listdir() if '.' not in f]
+
+    # if projects is None, then no --project arguments were provided, thus return all projects
+    if type(projects) is None:
+        return project_dirs
+    # if projects is list, is several projects
+    if type(projects) is list:
+        return list(set([p for d in project_dirs for p in projects if p.lower() == d.lower()]))
+    else:
+        print("Unable to determine type of projects, returning empty list")
+        return []
+    # end if-else
+# end def
 
 
+# TODO implement functionality for parameters.json
 def generate_dockerfile(project_folder: str, no_overwrite=True):
+    """Generate Dockerfile in `project_folder`,
+    `no_overwrite` for determining whether to overwrite if the Dockerfile already exists"""
     dockerfile_path = os.path.join(project_folder, "Dockerfile")
 
     # return if no_overwrite == True and the Dockerfile exists
@@ -56,7 +69,7 @@ def run_dockerfile(project_name: str):
 
     # run: docker run --rm --interactive --name proj_name proj_name
     cmd = f"docker run --rm --interactive --name {project_name.lower()} {project_name.lower()}"
-    assert os.system(cmd) == 1
+    os.system(cmd)
 
     # move back to starting_dir
     os.chdir(starting_dir)
@@ -100,14 +113,14 @@ def run_script(args):
     # end if
 
     if args.list:
-        print("ONLY Listing projects")
+        print("ONLY Listing projects, ignoring --project parameters")
         print(get_project_list())
         exit(1)
     # end if
 
     if args.generate:
         print("ONLY Generating Dockerfiles")
-        for p in get_project_list():
+        for p in get_project_list(args.project):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
         # end for
         exit(1)
@@ -115,7 +128,7 @@ def run_script(args):
 
     if args.run:
         print("ONLY Running Dockerfiles")
-        for p in get_project_list():
+        for p in get_project_list(args.project):
             run_dockerfile(project_name=p)
         # end for
         exit(1)
@@ -123,7 +136,7 @@ def run_script(args):
 
     if args.clean_dockerfiles:
         print("ONLY Cleaning Dockerfiles")
-        for p in get_project_list():
+        for p in get_project_list(args.project):
             clean_dockerfile(project_name=p)
         # end for
         exit(1)
@@ -131,16 +144,17 @@ def run_script(args):
 
     if args.build:
         print("ONLY Building Docker Containers")
-        for p in get_project_list():
+        for p in get_project_list(args.project):
             build_container(project_name=p)
         # end for
         exit(1)
     # end if
 
     # run script normally
-    for p in get_project_list():
+    for p in get_project_list(args.project):
         generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
-        run_dockerfile()
+        build_container(project_name=p)
+        run_dockerfile(project_name=p)
     # end for
 # end def
 
@@ -148,10 +162,10 @@ def run_script(args):
 def generate_args():
     """Generate ArgumentParser and return parsed arguments"""
     parser = argparse.ArgumentParser(description="Generate Dockerfiles for Rust programs and run them.")
-    parser.add_argument("-p", "--program",
+    parser.add_argument("-p", "--project",
                         help="Run specific programs by name, if none provided, runs all programs",
                         action="append",
-                        dest="program")
+                        dest="project")
     parser.add_argument("-l", "--list",
                         help="List all local projects and exit, defaults to False, mutually exclusive with -g,-l,-c,-b",
                         action="store_true",
