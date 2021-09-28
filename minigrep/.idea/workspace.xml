@@ -12,16 +12,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32c88cb0-430c-47a1-83d9-25ba8f5de022" name="Changes" comment="Changed minigrep to use iterators">
-      <change afterPath="$PROJECT_DIR$/../.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/CMSC 393.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/parameters.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+    <list default="true" id="32c88cb0-430c-47a1-83d9-25ba8f5de022" name="Changes" comment="Added parameters.json for minigrep">
       <change beforePath="$PROJECT_DIR$/../run_programs.py" beforeDir="false" afterPath="$PROJECT_DIR$/../run_programs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -110,7 +101,7 @@
       <workItem from="1632329934694" duration="266000" />
       <workItem from="1632697116448" duration="2295000" />
       <workItem from="1632800105306" duration="9000" />
-      <workItem from="1632801469751" duration="1318000" />
+      <workItem from="1632801469751" duration="1415000" />
     </task>
     <task id="LOCAL-00001" summary="Updated MeanMedianMode and PigLatin to use .trim() on strings.">
       <created>1632248211945</created>
@@ -140,7 +131,28 @@
       <option name="project" value="LOCAL" />
       <updated>1632698896590</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added Dockerfile for minigrep and project files.">
+      <created>1632802843343</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1632802843343</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added additional output statements to minigrep">
+      <created>1632802863766</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1632802863766</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added parameters.json for minigrep">
+      <created>1632802883683</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1632802883683</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +176,9 @@
     <MESSAGE value="Added minigrep projects and initial code." />
     <MESSAGE value="Finished minigrep project" />
     <MESSAGE value="Changed minigrep to use iterators" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed minigrep to use iterators" />
+    <MESSAGE value="Added Dockerfile for minigrep and project files." />
+    <MESSAGE value="Added additional output statements to minigrep" />
+    <MESSAGE value="Added parameters.json for minigrep" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added parameters.json for minigrep" />
   </component>
 </project>
