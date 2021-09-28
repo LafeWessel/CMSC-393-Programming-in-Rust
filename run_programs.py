@@ -112,8 +112,14 @@ def run_script(args):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
         exit(1)
 
+    if args.build:
+        print("ONLY Building Docker Containers")
+        for p in get_project_list(args.project):
+            build_container(project_name=p)
+        exit(1)
+
     if args.run:
-        print("ONLY Running Dockerfiles")
+        print("ONLY Running Docker Containers")
         for p in get_project_list(args.project):
             run_dockerfile(project_name=p)
         exit(1)
@@ -122,12 +128,6 @@ def run_script(args):
         print("ONLY Cleaning Dockerfiles")
         for p in get_project_list(args.project):
             clean_dockerfile(project_name=p)
-        exit(1)
-
-    if args.build:
-        print("ONLY Building Docker Containers")
-        for p in get_project_list(args.project):
-            build_container(project_name=p)
         exit(1)
 
     # run script normally
@@ -141,11 +141,11 @@ def generate_args():
     """Generate ArgumentParser and return parsed arguments"""
     parser = argparse.ArgumentParser(description="Generate Dockerfiles for Rust programs and run them.")
     parser.add_argument("-p", "--project",
-                        help="Run specific programs by name, if none provided, runs all programs",
+                        help="Run specific programs by name, if none provided, runs all programs, can have > 1 '-p' parameter. (case-insensitive)",
                         action="append",
                         dest="project")
     parser.add_argument("-l", "--list",
-                        help="List all local projects and exit, defaults to False, mutually exclusive with -g,-l,-c,-b",
+                        help="List all local projects and exit, defaults to False, mutually exclusive with -g,-r,-c,-b",
                         action="store_true",
                         default=False,
                         dest="list")
@@ -170,7 +170,7 @@ def generate_args():
                         default=False,
                         dest="clean_dockerfiles")
     parser.add_argument("-b", "--build",
-                        help="Build Docker containers, defaults to False, mutually exclusive with -l,-g,-r,-b",
+                        help="Build Docker containers, defaults to False, mutually exclusive with -l,-g,-r,-c",
                         action="store_true",
                         default=False,
                         dest="build")
