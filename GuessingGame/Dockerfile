@@ -8,4 +8,4 @@ FROM debian:buster-slim
 
 COPY --from=build /target/release/GuessingGame .
 
-CMD ["./GuessingGame"]
+CMD ["./GuessingGame "]

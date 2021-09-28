@@ -1,15 +1,13 @@
 {
-  "parameters" : {
-    "param_1": "to",
-    "param_2": "poem.txt"
-  },
-  "write_to_console" : {
-    "file_1": "poem.txt"
-  },
+  "parameters" : [
+    "to", "poem.txt"
+  ],
+  "write_to_console" : [
+    "poem.txt"
+  ],
   "environment_vars": {
-    "CASE_SENSITIVE" : {
-      "insensitive" : 0,
-      "sensitive" : 1
-    }
+    "CASE_SENSITIVE" : [
+      0, 1
+    ]
   }
 }

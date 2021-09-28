@@ -8,4 +8,4 @@ FROM debian:buster-slim
 
 COPY --from=build /target/release/minigrep .
 
-CMD ["./minigrep"]
+CMD ["./minigrep to poem.txt"]
