@@ -7,5 +7,7 @@ RUN cargo build --release
 FROM debian:buster-slim
 
 COPY --from=build /target/release/minigrep .
+COPY ./poem.txt .
 
-CMD ["./minigrep to poem.txt"]
+
+CMD ["./minigrep" , "to", "poem.txt"]
