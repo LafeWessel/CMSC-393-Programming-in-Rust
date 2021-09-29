@@ -110,31 +110,26 @@ def run_script(args):
     if args.list:
         print("Listing projects, ignoring --project parameters")
         print(get_project_list())
-        exit(1)
 
     if args.clean_dockerfiles:
         print("Cleaning Dockerfiles")
         for p in get_project_list(args.project):
             clean_dockerfile(project_name=p)
-        exit(1)
 
     if args.generate:
         print("Generating Dockerfiles")
         for p in get_project_list(args.project):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
-        exit(1)
 
     if args.build:
         print("Building Docker Containers")
         for p in get_project_list(args.project):
             build_container(project_name=p)
-        exit(1)
 
     if args.run:
         print("Running Docker Containers")
         for p in get_project_list(args.project):
             run_dockerfile(project_name=p)
-        exit(1)
 
     # run script normally
     for p in get_project_list(args.project):
