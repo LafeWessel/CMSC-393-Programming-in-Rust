@@ -110,37 +110,34 @@ def build_container(project_name: str):
 
 def run_script(args):
     """Run script based on command line arguments provided"""
-    if sum([args.list, args.generate, args.run, args.clean_dockerfiles, args.build]) > 1:
-        print("Too many mutually exclusive arguments provided, exiting")
-        exit(1)
 
     if args.list:
-        print("ONLY Listing projects, ignoring --project parameters")
+        print("Listing projects, ignoring --project parameters")
         print(get_project_list())
         exit(1)
 
+    if args.clean_dockerfiles:
+        print("Cleaning Dockerfiles")
+        for p in get_project_list(args.project):
+            clean_dockerfile(project_name=p)
+        exit(1)
+
     if args.generate:
-        print("ONLY Generating Dockerfiles")
+        print("Generating Dockerfiles")
         for p in get_project_list(args.project):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
         exit(1)
 
     if args.build:
-        print("ONLY Building Docker Containers")
+        print("Building Docker Containers")
         for p in get_project_list(args.project):
             build_container(project_name=p)
         exit(1)
 
     if args.run:
-        print("ONLY Running Docker Containers")
+        print("Running Docker Containers")
         for p in get_project_list(args.project):
             run_dockerfile(project_name=p)
-        exit(1)
-
-    if args.clean_dockerfiles:
-        print("ONLY Cleaning Dockerfiles")
-        for p in get_project_list(args.project):
-            clean_dockerfile(project_name=p)
         exit(1)
 
     # run script normally
@@ -158,17 +155,17 @@ def generate_args():
                         action="append",
                         dest="project")
     parser.add_argument("-l", "--list",
-                        help="List all local projects and exit, defaults to False, mutually exclusive with -g,-r,-c,-b",
+                        help="List all local projects and exit, defaults to False",
                         action="store_true",
                         default=False,
                         dest="list")
     parser.add_argument("-g", "--generate",
-                        help="Generate Dockerfiles and exit, defaults to False, mutually exclusive with -l,-r,-c,-b",
+                        help="Generate Dockerfiles and exit, defaults to False",
                         action="store_true",
                         default=False,
                         dest="generate")
     parser.add_argument("-r", "--run",
-                        help="Run projects with existing Dockerfiles, defaults to False, mutually exclusive with -l,-g,-c,-b",
+                        help="Run projects with existing Dockerfiles, defaults to False",
                         action="store_true",
                         default=False,
                         dest="run")
@@ -178,12 +175,12 @@ def generate_args():
                         default=False,
                         dest="no_overwrite")
     parser.add_argument("-c","--clean-dockerfiles",
-                        help="Clean Dockerfiles from project directories, defaults to False, mutually exclusive with -l,-g,-r,-b",
+                        help="Clean Dockerfiles from project directories, defaults to False",
                         action="store_true",
                         default=False,
                         dest="clean_dockerfiles")
     parser.add_argument("-b", "--build",
-                        help="Build Docker containers, defaults to False, mutually exclusive with -l,-g,-r,-c",
+                        help="Build Docker containers, defaults to False",
                         action="store_true",
                         default=False,
                         dest="build")
