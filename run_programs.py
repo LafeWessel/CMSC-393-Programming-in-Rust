@@ -21,11 +21,10 @@ def get_project_list(projects=None):
     return project_dirs
 
 
-# TODO implement functionality for parameters.json
 def generate_dockerfile(project_folder: str, no_overwrite=True):
     """Generate Dockerfile in `project_folder`, `no_overwrite` for determining whether to overwrite if the Dockerfile already exists"""
     dockerfile_path = os.path.join(project_folder, "Dockerfile")
-
+    parameters_path = os.path.join(project_folder, "parameters.json")
     # return if no_overwrite == True and the Dockerfile exists
     if no_overwrite and os.path.isfile(dockerfile_path):
         print(f"Will not overwrite file {dockerfile_path}")
@@ -35,9 +34,6 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
 
     # read in template_dockerfile
     temp = open("template_dockerfile.txt", "r").read()
-
-    dockerfile_path = os.path.join(project_folder, "Dockerfile")
-    parameters_path = os.path.join(project_folder, "parameters.json")
 
     # replace the $$ with project_name
     temp = temp.replace("$$", project_folder)
