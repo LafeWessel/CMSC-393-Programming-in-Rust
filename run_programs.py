@@ -47,9 +47,18 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
         print(f"Loading data from {parameters_path}")
         data = json.load(open(parameters_path, "r"))
         if "parameters" in data.keys():
-            temp = temp.replace("<params>"," ".join(data['parameters']))
+            params = ""
+            for p in data['parameters']:
+                params += f", \"{p}\""
+            temp = temp.replace("<params>",params)
+        if "copy_to_container" in data.keys():
+            to_copy =""
+            for c in data["copy_to_container"]:
+               to_copy += f"COPY ./{c} .\n"
+            temp = temp.replace("<copy>",to_copy)
     else:
-        temp = temp.replace("<params>","")
+        temp = temp.replace("<params>", "")
+        temp = temp.replace("<copy>", "")
 
     new_file = open(dockerfile_path, "w")
     new_file.write(temp)

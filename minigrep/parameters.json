@@ -2,7 +2,7 @@
   "parameters" : [
     "to", "poem.txt"
   ],
-  "write_to_console" : [
+  "copy_to_container" : [
     "poem.txt"
   ],
   "environment_vars": {
