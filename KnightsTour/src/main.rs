@@ -29,9 +29,13 @@ fn main() {
 
     // call solver
     println!("Solving a {}x{} board, starting from {},{}",size,size,start_row,start_column);
-    let solver = knights_tour_solver::new(&board);
-    solver.solve_board(start_row, start_column);
+    let mut solver = knights_tour_solver::new(&mut board);
+    solver.solve_board(start_row as usize, start_column as usize);
+
 
     // print board
+    println!("------------------");
+    println!("Took {} attempts", solver.get_attempt_count());
     board.print_board();
+
 }

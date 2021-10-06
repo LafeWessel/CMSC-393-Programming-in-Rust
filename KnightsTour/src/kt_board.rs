@@ -10,12 +10,16 @@ impl knights_tour_board{
         return knights_tour_board{board};
     }
 
+    pub fn get_board_size(&self) -> usize{
+        return self.board.len();
+    }
+
     // Get value of position on board, return false if unable to
     pub fn get_position_value(&self, row : usize, col: usize) -> (i32,bool){
         if self.valid_position(row,col){
             return (self.board[row][col],true);
         }
-        (0,false)
+        return (0,false);
     }
 
     // Set value of position on board, return false if unable to
@@ -29,10 +33,11 @@ impl knights_tour_board{
 
     // determine if position is on board (i.e. not off sides)
     pub fn valid_position(&self, row : usize, col :usize) -> bool{
-        row >= 0 && row < self.board.len() && col >= 0 && col < self.board.len()
+        row >= 0 && row < self.board.len() && col >=0 && col < self.board.len()
     }
 
     pub fn print_board(&self){
+        println!("------------------");
         for i in self.board.iter(){
             for j in i.iter(){
                 if *j == -1{ print!(" . ") }
@@ -40,5 +45,6 @@ impl knights_tour_board{
             }
             println!();
         }
+        println!("------------------");
     }
 }
