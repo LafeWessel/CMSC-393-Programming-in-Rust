@@ -13,7 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32c88cb0-430c-47a1-83d9-25ba8f5de022" name="Changes" comment="Added parameters.json for minigrep">
-      <change beforePath="$PROJECT_DIR$/../run_programs.py" beforeDir="false" afterPath="$PROJECT_DIR$/../run_programs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,6 +102,8 @@
       <workItem from="1632697116448" duration="2295000" />
       <workItem from="1632800105306" duration="9000" />
       <workItem from="1632801469751" duration="1415000" />
+      <workItem from="1633369288026" duration="286000" />
+      <workItem from="1633468550719" duration="127000" />
     </task>
     <task id="LOCAL-00001" summary="Updated MeanMedianMode and PigLatin to use .trim() on strings.">
       <created>1632248211945</created>
