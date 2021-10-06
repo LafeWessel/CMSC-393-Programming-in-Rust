@@ -1,27 +1,37 @@
 use std::io;
+use crate::kt_board::knights_tour_board;
+use crate::kt_solver::knights_tour_solver;
 
-mod KTBoard;
-mod KTSolver;
+mod kt_board;
+mod kt_solver;
 
 fn main() {
-    println!("Hello, world!");
+
 
     // read in board size
+    println!("What size board do you want to solve?");
     let mut input = String::new();
     io::stdin().read_line(&mut input).expect("Unable to read line");
-    let size = input.trim().parse().expect("Unable to parse size");
+    let size : usize = input.trim().parse().expect("Unable to parse size");
+    let mut board = knights_tour_board::new(size);
 
-    let mut board = KTBoard::new(size as usize);
-    // read in starting column
-    input.clear();
-    io::stdin().read_line(&mut input).expect("Unable to read line");
-    let start_column = input.trim().parse().expect("Unable to parse starting column");
     // read in starting row
+    println!("What row would you like to start at?");
     input.clear();
     io::stdin().read_line(&mut input).expect("Unable to read line");
-    let start_row = input.trim().parse().expect("Unable to parse starting row");
+    let start_row : u32 = input.trim().parse().expect("Unable to parse starting row");
+
+    // read in starting column
+    println!("What column would you like to start at?");
+    input.clear();
+    io::stdin().read_line(&mut input).expect("Unable to read line");
+    let start_column : u32 = input.trim().parse().expect("Unable to parse starting column");
+
     // call solver
+    println!("Solving a {}x{} board, starting from {},{}",size,size,start_row,start_column);
+    let solver = knights_tour_solver::new(&board);
+    solver.solve_board(start_row, start_column);
 
     // print board
-
+    board.print_board();
 }
