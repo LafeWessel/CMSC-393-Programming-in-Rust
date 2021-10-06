@@ -33,6 +33,12 @@ impl knights_tour_board{
     }
 
     pub fn print_board(&self){
-        println!("Printing board")
+        for i in self.board.iter(){
+            for j in i.iter(){
+                if *j == -1{ print!(" . ") }
+                else { print!(" {} ", *j) }
+            }
+            println!();
+        }
     }
 }
