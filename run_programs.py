@@ -110,6 +110,7 @@ def run_script(args):
     if args.list:
         print("Listing projects, ignoring --project parameters")
         print(get_project_list())
+        exit(1)
 
     if args.clean_dockerfiles:
         print("Cleaning Dockerfiles")

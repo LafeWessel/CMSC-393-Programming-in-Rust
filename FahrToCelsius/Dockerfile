@@ -8,4 +8,5 @@ FROM debian:buster-slim
 
 COPY --from=build /target/release/FahrToCelsius .
 
-CMD ["./FahrToCelsius "]
+
+CMD ["./FahrToCelsius" ]
