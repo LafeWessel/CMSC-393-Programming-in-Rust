@@ -1,0 +1,5 @@
+{
+  "copy_to_container": [
+    "./simulation_configs ./simulation_configs"
+  ]
+}

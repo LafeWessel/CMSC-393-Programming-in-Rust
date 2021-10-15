@@ -3,7 +3,7 @@
     "to", "poem.txt"
   ],
   "copy_to_container" : [
-    "poem.txt"
+    "./poem.txt ."
   ],
   "environment_vars": {
     "CASE_SENSITIVE" : [

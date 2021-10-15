@@ -47,11 +47,15 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
             for p in data['parameters']:
                 params += f", \"{p}\""
             temp = temp.replace("<params>",params)
+        else:
+            temp = temp.replace("<params>","")
         if "copy_to_container" in data.keys():
             to_copy =""
             for c in data["copy_to_container"]:
-               to_copy += f"COPY ./{c} .\n"
+               to_copy += f"COPY {c}\n"
             temp = temp.replace("<copy>",to_copy)
+        else:
+            temp = temp.replace("<copy>","")
     else:
         temp = temp.replace("<params>", "")
         temp = temp.replace("<copy>", "")
@@ -133,10 +137,11 @@ def run_script(args):
             run_dockerfile(project_name=p)
 
     # run script normally
-    for p in get_project_list(args.project):
-        generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
-        build_container(project_name=p)
-        run_dockerfile(project_name=p)
+    if sum([args.clean_dockerfiles, args.generate, args.build, args.run]) == 0:
+        for p in get_project_list(args.project):
+            generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
+            build_container(project_name=p)
+            run_dockerfile(project_name=p)
 
 
 def generate_args():
