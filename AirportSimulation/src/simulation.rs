@@ -75,15 +75,14 @@ impl AirportSimulation {
 
     /// Determine if any planes have crashed, remove them from the arrival_q and document
     fn determine_crashed(&mut self){
-
+        // Iterate through each plane and determine if they crashed
         for p in self.arrival_q.iter_mut(){
             if p.check_crash(self.config.reserve_fuel, self.timestamp){
                 self.summary.count_crashed += 1;
             }
         }
-
-        self.arrival_q = self.arrival_q.into_iter().filter(|plane| plane.in_q).collect();
-
+        // reassign arrival queue to one without crashed planes
+        self.arrival_q = self.arrival_q.iter().filter(|plane| plane.in_q).cloned().collect();
     }
 
     fn add_to_queues(&mut self){
@@ -117,6 +116,14 @@ impl Plane {
             return true;
         }
         false
+    }
+}
+
+impl Clone for Plane{
+    fn clone(&self) -> Self {
+        Plane{
+            ..*self
+        }
     }
 }
 
