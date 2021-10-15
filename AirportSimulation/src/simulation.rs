@@ -2,6 +2,7 @@
 use std::fs::{File};
 use std::io::{BufReader, BufRead};
 use std::path::{Path};
+use rand::Rng;
 
 pub struct AirportSimulation {
     arrival_q : Vec<Plane>,
@@ -60,9 +61,9 @@ impl AirportSimulation {
             self.tick();
             self.timestamp += 1;
         }
+        self.summary.print_summary();
     }
 
-    ///
     fn tick(&mut self){
         // during each tick, must determine:
         // - if any planes crashed
@@ -73,25 +74,45 @@ impl AirportSimulation {
         self.add_to_queues();
     }
 
-    /// Determine if any planes have crashed, remove them from the arrival_q and document
-    fn determine_crashed(&mut self){
+    /// Determine if any planes have crashed, remove them from the arrival_q and document, return local count crashed
+    fn determine_crashed(&mut self) -> u32{
         // Iterate through each plane and determine if they crashed
+        let mut count : u32 = 0;
         for p in self.arrival_q.iter_mut(){
             if p.check_crash(self.config.reserve_fuel, self.timestamp){
                 self.summary.count_crashed += 1;
+                count += 1;
             }
         }
         // reassign arrival queue to one without crashed planes
         self.arrival_q = self.arrival_q.iter().filter(|plane| plane.in_q).cloned().collect();
+        count
     }
 
-    fn add_to_queues(&mut self){
-
+    /// Add Planes to arrival and departure queues based on configuration probabilities, return count added
+    fn add_to_queues(&mut self) -> u32{
+        let mut count : u32 = 0;
+        // Arrivals
+        if rand::thread_rng().gen_ratio((self.config.arrival_rate * 1000.0) as u32,1000){
+            self.arrival_q.push(Plane{
+                enter_q : self.timestamp,
+                exit_q : 0,
+                in_q : true
+            });
+            count += 1;
+        }
+        // Departures
+        if rand::thread_rng().gen_ratio((self.config.departure_rate * 1000.0) as u32, 1000){
+            self.depart_q.push(Plane{
+                enter_q : self.timestamp,
+                exit_q : 0,
+                in_q : true
+            });
+            count += 1;
+        }
+        count
     }
 }
-
-
-
 
 
 struct Plane {
@@ -146,4 +167,20 @@ struct SimulationSummary {
     count_crashed : u32,
     depart_waits : Vec<u32>,
     land_waits : Vec<u32>,
+}
+
+impl SimulationSummary{
+    fn calculate_summary(&mut self){
+        self.ave_departure_wait = (self.land_waits.iter().sum::<u32>() / (self.land_waits.len() as u32)) as f32;
+        self.ave_land_wait = (self.depart_waits.iter().sum::<u32>() / (self.depart_waits.len() as u32)) as f32;
+    }
+
+    pub fn print_summary(&mut self){
+        self.calculate_summary();
+        println!("Number of planes departed: {}", self.count_departed);
+        println!("Average wait time for departing planes: {}", self.ave_departure_wait);
+        println!("Number of planes landed: {}", self.count_landed);
+        println!("Average wait time for landing planes {}", self.ave_land_wait);
+        println!("Number of planes crashed: {}", self.count_crashed);
+    }
 }
