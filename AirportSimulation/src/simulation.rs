@@ -170,11 +170,13 @@ struct SimulationSummary {
 }
 
 impl SimulationSummary{
+    /// Calculate averages for departure and arrival waits
     fn calculate_summary(&mut self){
         self.ave_departure_wait = (self.land_waits.iter().sum::<u32>() / (self.land_waits.len() as u32)) as f32;
         self.ave_land_wait = (self.depart_waits.iter().sum::<u32>() / (self.depart_waits.len() as u32)) as f32;
     }
 
+    /// Print simulation summary details
     pub fn print_summary(&mut self){
         self.calculate_summary();
         println!("Number of planes departed: {}", self.count_departed);
