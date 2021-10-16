@@ -40,6 +40,10 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
 
     # get parameter data for project
     data = read_parameters(project_folder=project_folder)
+
+    if "do_not_generate_dockerfile" in data.keys():
+        return
+
     if "parameters" in data.keys():
         params = ""
         for p in data['parameters']:
@@ -79,6 +83,10 @@ def run_dockerfile(project_name: str):
 def clean_dockerfile(project_name: str):
     """Clean (Remove) Dockerfile from `project_name` directory"""
     dockerfile_path = os.path.join(project_name, "Dockerfile")
+
+    data = read_parameters(project_folder=project_name)
+    if "do_not_generate_dockerfile" in data.keys():
+        return
 
     if os.path.isfile(dockerfile_path):
         print(f"Removing {dockerfile_path}")
