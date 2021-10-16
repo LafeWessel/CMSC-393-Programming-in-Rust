@@ -6,7 +6,7 @@ import glob
 
 
 def get_project_list(projects=None):
-    """Return list of all Rust project folders in current directory matching names in `projects`, or all if `projects` == None, not including those with '.'"""
+    """Return list of all Rust project folders in current directory matching names in `projects`, or all if `projects` == None, not including those with '.' in their name"""
     # get the names of all the folders in this directory, minus those with a '.'
     project_dirs = [f for f in os.listdir() if '.' not in f]
 
@@ -24,7 +24,7 @@ def get_project_list(projects=None):
 def generate_dockerfile(project_folder: str, no_overwrite=True):
     """Generate Dockerfile in `project_folder`, `no_overwrite` for determining whether to overwrite if the Dockerfile already exists"""
     dockerfile_path = os.path.join(project_folder, "Dockerfile")
-    parameters_path = os.path.join(project_folder, "parameters.json")
+
     # return if no_overwrite == True and the Dockerfile exists
     if no_overwrite and os.path.isfile(dockerfile_path):
         print(f"Will not overwrite file {dockerfile_path}")
@@ -38,26 +38,21 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
     # replace the $$ with project_name
     temp = temp.replace("$$", project_folder)
 
-    # determine if parameters.json exists
-    if os.path.isfile(parameters_path):
-        print(f"Loading data from {parameters_path}")
-        data = json.load(open(parameters_path, "r"))
-        if "parameters" in data.keys():
-            params = ""
-            for p in data['parameters']:
-                params += f", \"{p}\""
-            temp = temp.replace("<params>",params)
-        else:
-            temp = temp.replace("<params>","")
-        if "copy_to_container" in data.keys():
-            to_copy =""
-            for c in data["copy_to_container"]:
-               to_copy += f"COPY {c}\n"
-            temp = temp.replace("<copy>",to_copy)
-        else:
-            temp = temp.replace("<copy>","")
+    # get parameter data for project
+    data = read_parameters(project_folder=project_folder)
+    if "parameters" in data.keys():
+        params = ""
+        for p in data['parameters']:
+            params += f", \"{p}\""
+        temp = temp.replace("<params>", params)
     else:
         temp = temp.replace("<params>", "")
+    if "copy_to_container" in data.keys():
+        to_copy =""
+        for c in data["copy_to_container"]:
+            to_copy += f"COPY {c}\n"
+        temp = temp.replace("<copy>", to_copy)
+    else:
         temp = temp.replace("<copy>", "")
 
     new_file = open(dockerfile_path, "w")
@@ -142,6 +137,17 @@ def run_script(args):
             generate_dockerfile(project_folder=p, no_overwrite=args.no_overwrite)
             build_container(project_name=p)
             run_dockerfile(project_name=p)
+
+
+def read_parameters(project_folder):
+    """Read in parameters.json for given project; if it does not exist, return an empty dictionary"""
+    parameters_path = os.path.join(project_folder, "parameters.json")
+    if os.path.isfile(parameters_path):
+        print(f"Loading data from {parameters_path}")
+        data = json.load(open(parameters_path, "r"))
+    else:
+        data = {}
+    return data
 
 
 def generate_args():
