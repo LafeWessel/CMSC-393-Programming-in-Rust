@@ -41,7 +41,8 @@ def generate_dockerfile(project_folder: str, no_overwrite=True):
     # get parameter data for project
     data = read_parameters(project_folder=project_folder)
 
-    if "do_not_generate_dockerfile" in data.keys():
+    if "do_not_generate_dockerfile" in data.keys() and data["do_not_generate_dockerfile"]:
+        print(f"Avoiding project {project_folder}")
         return
 
     if "parameters" in data.keys():
@@ -85,7 +86,8 @@ def clean_dockerfile(project_name: str):
     dockerfile_path = os.path.join(project_name, "Dockerfile")
 
     data = read_parameters(project_folder=project_name)
-    if "do_not_generate_dockerfile" in data.keys():
+    if "do_not_generate_dockerfile" in data.keys() and data["do_not_generate_dockerfile"]:
+        print(f"Avoiding project {project_name}")
         return
 
     if os.path.isfile(dockerfile_path):
