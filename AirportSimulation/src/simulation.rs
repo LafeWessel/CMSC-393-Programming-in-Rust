@@ -70,14 +70,12 @@ impl AirportSimulation {
     }
 
     fn tick(&mut self){
-        // during each tick, must determine:
-        // - if any planes crashed
+
         self.determine_crashed();
-        // - which runways are free
-        // - - which planes can land or depart
+
         self.land_planes();
         self.depart_planes();
-        // - whether to add any planes to depart/land queues
+
         self.add_to_queues();
         self.decrement_runways();
     }
