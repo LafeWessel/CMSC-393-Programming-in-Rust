@@ -1,10 +1,9 @@
 
+use std::fs;
 
-
-
-
-fn read_file(file_name : &str) -> Vec<&str>{
-    vec![]
+/// Read a file and split into lines, collecting into a Vec<String>
+fn read_file(file_name : &str) -> Vec<String>{
+    fs::read_to_string(file_name).unwrap().lines().map(|s| String::from(s)).collect()
 }
 
 
@@ -14,14 +13,32 @@ fn read_file(file_name : &str) -> Vec<&str>{
 
 
 fn main() {
-    println!("Hello, world!");
+
 }
 
+struct RunData{
+    algorithm: SortingAlgorithm,
+    time : i32,
+    compares: i32,
+    swaps: i32,
+}
 
+impl RunData{
+    fn output(&self){
+        println!("Algorithm:\t\tTime:\t\tCompares:\t\tSwaps\t\t");
+        println!("{:?}\t\t{}\t\t{}\t\t{}",self.algorithm,self.time,self.compares,self.swaps);
+    }
+
+}
+
+#[derive(Debug)]
+enum SortingAlgorithm{
+    Selection,Insertion,Bubble,Merge,Quicksort
+}
 
 impl SortingAlgorithm{
 
-    fn sort<T>(self, list : &mut Vec<T>)
+    fn sort<T : Ord>(self, list : &mut Vec<T>)
     {
         match self{
             SortingAlgorithm::Selection => SortingAlgorithm::selection_sort(list),
@@ -32,25 +49,21 @@ impl SortingAlgorithm{
         }
     }
 
-    fn selection_sort<T>(list: &mut [T]){
+    fn selection_sort<T : Ord>(list: &mut [T]){
 
     }
-    fn insertion_sort<T>(list: &mut [T]){
+    fn insertion_sort<T : Ord>(list: &mut [T]){
 
     }
-    fn bubble_sort<T>(list: &mut [T]){
+    fn bubble_sort<T : Ord>(list: &mut [T]){
 
     }
-    fn merge_sort<T>(list: &mut [T]){
+    fn merge_sort<T : Ord>(list: &mut [T]){
 
     }
-    fn quick_sort<T>(list: &mut [T]){
+    fn quick_sort<T : Ord>(list: &mut [T]){
 
     }
-}
-
-enum SortingAlgorithm{
-    Selection,Insertion,Bubble,Merge,Quicksort
 }
 
 
