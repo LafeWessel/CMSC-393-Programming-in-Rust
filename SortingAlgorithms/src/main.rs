@@ -143,9 +143,12 @@ impl SortingAlgorithm{
             swaps,
         }
     }
-    fn merge_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData{
 
-        Self::merge_sort_split(list, 0, list.len());
+    fn merge_sort<T : Ord + Clone + Debug>(list: &mut Vec<T>) -> RunData{
+
+        println!("Running merge sort");
+
+        Self::merge_sort_split(list, 0, list.len()-1);
 
 
 
@@ -158,28 +161,34 @@ impl SortingAlgorithm{
     }
 
     /// Recursive function for splitting and recombining the array
-    fn merge_sort_split<T : Ord + Clone + Debug>(list : &mut [T], begin : usize, end : usize){
-        if (begin as i32 - end as i32) <= 1{
+    fn merge_sort_split<T : Ord + Clone + Debug>(list : &mut Vec<T>, begin : usize, end : usize){
+        if (end as i32 - begin as i32) <= 1{
             return;
         }
-        let mid = (begin-end)/2;
-
+        let mid = (end+begin)/2;
+        println!("Bounds: begin: {}, end: {}",begin, end);
         // Split array into individual pieces
         Self::merge_sort_split(list, begin, mid);
         Self::merge_sort_split(list, mid, end);
 
+
+
+
         // merge arrays back together
         let mut i  = begin;
         let mut j = mid;
-        while j < mid{
+        while i < mid  && ( (list[i].cmp(&list[j]) == Ordering::Greater) || j <= end){
+            println!("i:{}={:?}, j:{}={:?}, mid:{}",i,&list[i],j,&list[j],mid);
             if list[i].cmp(&list[j]) == Ordering::Greater{
+                println!("Swapping {}:{:?} <-> {}:{:?} in list:{:?}",i,&list[i],j,&list[j],list);
                 list.swap(i,j);
-                j += 1;
+                j = if j == end {j} else {j+1}
             }
             else {
-                i += 1;
+                i = if i == mid {i} else {i+1}
             }
         }
+        println!("{:?}",list);
 
     }
 
@@ -258,7 +267,7 @@ mod tests{
     #[test]
     fn merge_sort_test(){
         // short
-        let mut v = vec![1,5,3,2,4];
+        let mut v = vec![1,5,2,3,4];
         SortingAlgorithm::sort(SortingAlgorithm::Merge,&mut v);
         assert_eq!(vec![1,2,3,4,5],v);
 
