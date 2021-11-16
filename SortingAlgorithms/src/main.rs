@@ -1,9 +1,10 @@
 
 use std::fs;
 use std::cmp::Ordering;
-use std::borrow::Borrow;
 use std::fmt::Debug;
 use std::time::Instant;
+use std::io;
+
 
 /// Read a file and split into lines, collecting into a Vec<String>
 fn read_file(file_name : &str) -> Vec<String>{
@@ -11,51 +12,104 @@ fn read_file(file_name : &str) -> Vec<String>{
 }
 
 
-
-
-
-
-
 fn main() {
+
+    println!("How many numbers would you like to sort? (max 250,000)");
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Unable to read input, exiting...");
+    let count : usize = input.trim().parse().expect("Unable to convert input to usize, exiting...");
+
+    let mut results :Vec<Vec<RunData<String>>> = vec![vec![]];
+    let mut index:usize = 0;
+    let files = fs::read_dir(".\\text_files")
+        .unwrap()
+        .map(|p| String::from(p.unwrap().path().to_str().unwrap()))
+        .filter(|p| p.contains(".txt"))
+        .collect::<Vec<String>>();
+
+    for f in files.iter(){
+        println!("File {:?}", f);
+        results.push(vec![]);
+
+        println!("Running Selection sort");
+        let mut v = read_file(f);
+        results[index].push(SortingAlgorithm::sort(SortingAlgorithm::Selection, &mut v[..count]));
+
+        println!("Running Insertion sort");
+        let mut v = read_file(f);
+        results[index].push(SortingAlgorithm::sort(SortingAlgorithm::Insertion, &mut v[..count]));
+
+        println!("Running Bubble sort");
+        let mut v = read_file(f);
+        results[index].push(SortingAlgorithm::sort(SortingAlgorithm::BubbleSort, &mut v[..count]));
+
+        println!("Running Merge sort");
+        let mut v = read_file(f);
+        results[index].push(SortingAlgorithm::sort(SortingAlgorithm::MergeSort, &mut v[..count]));
+
+        println!("Running Quicksort");
+        let mut v = read_file(f);
+        results[index].push(SortingAlgorithm::sort(SortingAlgorithm::QuickSort, &mut v[..count]));
+
+        index += 1;
+    }
+
+    println!("Algorithm:\t\tTime(ms):\tCompares:\t\tSwaps:\t\t\tFile:");
+    for f in 0..files.len(){
+        for d in results[f].iter(){
+            println!("{}\t\t{}",d.output(),files[f]);
+        }
+    }
+
+
 
 }
 
-struct RunData{
+struct RunData<T>{
     algorithm: SortingAlgorithm,
     time : i32,
     compares: i32,
     swaps: i32,
+    result : Option<Vec<T>>,
 }
 
-impl RunData{
+impl<T> RunData<T> {
     /// Print out data for an algorithm run
-    fn output(&self){
-        println!("Algorithm:\t\tTime:\t\tCompares:\t\tSwaps\t\t");
-        println!("{:?}\t\t{}\t\t{}\t\t{}",self.algorithm,self.time,self.compares,self.swaps);
+    fn output(&self) -> String{
+        format!("{:?}\t\t{}\t\t{}\t\t{}",self.algorithm,self.time,self.compares,self.swaps)
+    }
+
+    /// Increment compares by one
+    fn incr_comp(&mut self){
+        self.compares += 1;
+    }
+
+    /// Increment swaps by one
+    fn incr_swap(&mut self){
+        self.swaps += 1;
     }
 
 }
 
 #[derive(Debug)]
 enum SortingAlgorithm{
-    Selection,Insertion,Bubble,Merge,Quicksort
+    Selection,Insertion,BubbleSort,MergeSort,QuickSort
 }
 
 impl SortingAlgorithm{
 
 
-    fn sort<T: Ord + Clone + Debug>(self, list : &mut Vec<T>) -> RunData
-    {
+    fn sort<T: Ord + Clone + Debug>(self, list : &mut [T]) -> RunData<T> {
         match self{
             SortingAlgorithm::Selection => SortingAlgorithm::selection_sort(list),
             SortingAlgorithm::Insertion => SortingAlgorithm::insertion_sort(list),
-            SortingAlgorithm::Bubble => SortingAlgorithm::bubble_sort(list),
-            SortingAlgorithm::Merge => SortingAlgorithm::merge_sort(list),
-            SortingAlgorithm::Quicksort => SortingAlgorithm::quick_sort(list),
+            SortingAlgorithm::BubbleSort => SortingAlgorithm::bubble_sort(list),
+            SortingAlgorithm::MergeSort => SortingAlgorithm::merge_sort(list),
+            SortingAlgorithm::QuickSort => SortingAlgorithm::quick_sort(list),
         }
     }
 
-    fn selection_sort<T : Ord + Clone + Debug>(mut list: &mut [T]) -> RunData{
+    fn selection_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData<T>{
         // repeatedly find the smallest item and swap it with the next position of the list,
         // starting from the front
         let start = Instant::now();
@@ -63,16 +117,16 @@ impl SortingAlgorithm{
         let mut compares = 0;
 
         for i in 0..list.len(){
-            let mut smallest_T  = &list[i];
+            let mut smallest_t = &list[i];
             let mut smallest_i = i;
             for j in i+1..list.len(){
-                smallest_T = match smallest_T.cmp(&list[j]){
+                smallest_t = match smallest_t.cmp(&list[j]){
                     Ordering::Greater => {
                         smallest_i = j;
                         &list[j]
                     },
-                    Ordering::Equal => smallest_T,
-                    Ordering::Less => smallest_T,
+                    Ordering::Equal => smallest_t,
+                    Ordering::Less => smallest_t,
                 };
                 compares += 1;
             }
@@ -83,10 +137,12 @@ impl SortingAlgorithm{
             algorithm: SortingAlgorithm::Selection,
             time: start.elapsed().as_millis() as i32,
             compares,
-            swaps
+            swaps,
+            result : Option::None,
         }
     }
-    fn insertion_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData{
+
+    fn insertion_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData<T>{
         // iterate through elements, for each element, swap it backwards until in proper spot
         let start = Instant::now();
         let mut compares = 0;
@@ -109,10 +165,12 @@ impl SortingAlgorithm{
             algorithm: SortingAlgorithm::Insertion,
             time: start.elapsed().as_millis() as i32,
             compares,
-            swaps
+            swaps,
+            result : Option::None,
         }
     }
-    fn bubble_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData {
+
+    fn bubble_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData<T> {
         // for a moving window of 2 elements, move along array and swap if necessary
         // continue until array is sorted
 
@@ -137,70 +195,116 @@ impl SortingAlgorithm{
         }
 
         RunData{
-            algorithm: SortingAlgorithm::Bubble,
+            algorithm: SortingAlgorithm::BubbleSort,
             time: start.elapsed().as_millis() as i32,
             compares,
             swaps,
+            result : Option::None,
         }
     }
 
-    fn merge_sort<T : Ord + Clone + Debug>(list: &mut Vec<T>) -> RunData{
-
-        println!("Running merge sort");
-
-        Self::merge_sort_split(list, 0, list.len()-1);
-
-
-
-        RunData{
-            algorithm: SortingAlgorithm::Merge,
+    fn merge_sort<T: Ord + Clone + Debug>(list: &mut [T]) -> RunData<T>{
+        let start = Instant::now();
+        let mut data = RunData{
+            algorithm: SortingAlgorithm::MergeSort,
             time: 0,
             compares: 0,
-            swaps: 0
-        }
+            swaps: 0,
+            result : Option::None,
+        };
+        let len = list.len();
+        let result = Self::merge_sort_split(list, 0, len, &mut data);
+
+        data.result = Some(result);
+        data.time = start.elapsed().as_millis() as i32;
+        data
     }
 
     /// Recursive function for splitting and recombining the array
-    fn merge_sort_split<T : Ord + Clone + Debug>(list : &mut Vec<T>, begin : usize, end : usize){
+    fn merge_sort_split<T : Ord + Clone + Debug>(list : &mut [T], begin : usize, end : usize, data: &mut RunData<T>) -> Vec<T>{
         if (end as i32 - begin as i32) <= 1{
-            return;
+            return vec![list[begin].clone()];
         }
         let mid = (end+begin)/2;
-        println!("Bounds: begin: {}, end: {}",begin, end);
         // Split array into individual pieces
-        Self::merge_sort_split(list, begin, mid);
-        Self::merge_sort_split(list, mid, end);
-
-
-
+        let a = Self::merge_sort_split(list, begin, mid, data);
+        let b = Self::merge_sort_split(list, mid, end,data);
+        let mut r : Vec<T> = vec![];
 
         // merge arrays back together
-        let mut i  = begin;
-        let mut j = mid;
-        while i < mid  && ( (list[i].cmp(&list[j]) == Ordering::Greater) || j <= end){
-            println!("i:{}={:?}, j:{}={:?}, mid:{}",i,&list[i],j,&list[j],mid);
-            if list[i].cmp(&list[j]) == Ordering::Greater{
-                println!("Swapping {}:{:?} <-> {}:{:?} in list:{:?}",i,&list[i],j,&list[j],list);
-                list.swap(i,j);
-                j = if j == end {j} else {j+1}
-            }
-            else {
-                i = if i == mid {i} else {i+1}
-            }
-        }
-        println!("{:?}",list);
+        let mut i  = 0;
+        let mut j = 0;
 
+        // add from each until one is exhausted
+        while i < a.len() && j < b.len(){
+            match a[i].cmp(&b[j]){
+                Ordering::Less | Ordering::Equal => {
+                    r.push(a[i].clone());
+                    i += 1;
+                }
+                Ordering::Greater => {
+                    r.push(b[j].clone());
+                    j += 1;
+                }
+            }
+            data.incr_comp();
+        }
+        // exhaust left array
+        while i < a.len(){
+            r.push(a[i].clone());
+            i += 1;
+        }
+        // exhaust right array
+        while j < b.len(){
+            r.push(b[j].clone());
+            j += 1;
+        }
+        r
     }
 
-
-    fn quick_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData{
-        RunData{
-            algorithm: SortingAlgorithm::Quicksort,
+    fn quick_sort<T : Ord + Clone + Debug>(list: &mut [T]) -> RunData<T>{
+        let start = Instant::now();
+        let mut data = RunData{
+            algorithm: SortingAlgorithm::QuickSort,
             time: 0,
             compares: 0,
-            swaps: 0
+            swaps: 0,
+            result : Option::None,
+        };
+        Self::quick_sort_recursive(list, 0, (list.len()-1) as i32,&mut data);
+        data.time = start.elapsed().as_millis() as i32;
+        data
+    }
+
+    /// Find partition and recursively quick sort on either half of the partition
+    fn quick_sort_recursive<T : Ord + Clone + Debug>(list : &mut [T], begin : i32, end : i32, data : &mut RunData<T>){
+
+        if begin < end as i32{
+            let mid = Self::partition(list, begin as usize, end as usize, data);
+
+            Self::quick_sort_recursive(list, begin, (mid as i32-1) as i32, data);
+            Self::quick_sort_recursive(list, (mid + 1) as i32, end, data);
         }
     }
+
+    /// Find the partition of an array slice and swap elements as necessary
+    fn partition<T : Ord + Clone + Debug>(list : &mut [T], begin : usize, end : usize, data : &mut RunData<T>) -> usize{
+        // pick a pivot -> last element in sublist
+        let pivot = list[end].clone();
+        let mut i: i32 = begin as i32 - 1;
+        for j in begin..=end{
+            if pivot.cmp(&list[j]) == Ordering::Greater{
+                data.incr_comp();
+                i += 1;
+                list.swap(j, i as usize);
+                data.incr_swap();
+            }
+        }
+        list.swap((i + 1) as usize, end);
+        data.incr_swap();
+        (i + 1) as usize
+    }
+
 
 }
 
@@ -250,17 +354,17 @@ mod tests{
     fn bubble_sort_test(){
         // short
         let mut v = vec![1,5,3,2,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Bubble,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::BubbleSort, &mut v);
         assert_eq!(vec![1,2,3,4,5],v);
 
         // medium
         let mut v = vec![1,5,3,7,9,0,8,6,2,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Bubble,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::BubbleSort, &mut v);
         assert_eq!(vec![0,1,2,3,4,5,6,7,8,9],v);
 
         // long
         let mut v = vec![1,5,3,7,9,0,8,6,2,4,10,16,14,15,19,17,18,12,11,13];
-        SortingAlgorithm::sort(SortingAlgorithm::Bubble,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::BubbleSort, &mut v);
         assert_eq!(vec![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],v);
 
     }
@@ -268,35 +372,35 @@ mod tests{
     fn merge_sort_test(){
         // short
         let mut v = vec![1,5,2,3,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Merge,&mut v);
-        assert_eq!(vec![1,2,3,4,5],v);
+        let res = SortingAlgorithm::sort(SortingAlgorithm::MergeSort, &mut v);
+        assert_eq!(vec![1,2,3,4,5],res.result.unwrap());
 
         // medium
-        let mut v = vec![1,5,3,7,9,0,8,6,2,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Merge,&mut v);
-        assert_eq!(vec![0,1,2,3,4,5,6,7,8,9],v);
+        let mut v = vec![9,5,1,7,3,0,8,4,2,6];
+        let res = SortingAlgorithm::sort(SortingAlgorithm::MergeSort, &mut v);
+        assert_eq!(vec![0,1,2,3,4,5,6,7,8,9],res.result.unwrap());
 
         // long
         let mut v = vec![1,5,3,7,9,0,8,6,2,4,10,16,14,15,19,17,18,12,11,13];
-        SortingAlgorithm::sort(SortingAlgorithm::Merge,&mut v);
-        assert_eq!(vec![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],v);
+        let res = SortingAlgorithm::sort(SortingAlgorithm::MergeSort, &mut v);
+        assert_eq!(vec![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],res.result.unwrap());
 
     }
     #[test]
     fn quick_sort_test(){
         // short
         let mut v = vec![1,5,3,2,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Quicksort,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::QuickSort, &mut v);
         assert_eq!(vec![1,2,3,4,5],v);
 
         // medium
         let mut v = vec![1,5,3,7,9,0,8,6,2,4];
-        SortingAlgorithm::sort(SortingAlgorithm::Quicksort,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::QuickSort, &mut v);
         assert_eq!(vec![0,1,2,3,4,5,6,7,8,9],v);
 
         // long
         let mut v = vec![1,5,3,7,9,0,8,6,2,4,10,16,14,15,19,17,18,12,11,13];
-        SortingAlgorithm::sort(SortingAlgorithm::Quicksort,&mut v);
+        SortingAlgorithm::sort(SortingAlgorithm::QuickSort, &mut v);
         assert_eq!(vec![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],v);
 
     }
