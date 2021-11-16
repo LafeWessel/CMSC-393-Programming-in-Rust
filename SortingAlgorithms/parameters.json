@@ -1,0 +1,5 @@
+{
+  "copy_to_container": [
+    "./text_files ./text_files"
+  ]
+}
