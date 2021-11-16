@@ -164,7 +164,7 @@ def generate_args():
     """Generate ArgumentParser and return parsed arguments"""
     parser = argparse.ArgumentParser(description="Generate Dockerfiles for Rust programs and run them.")
     parser.add_argument("-p", "--project",
-                        help="Run specific programs by name, if none provided, runs all programs, can have > 1 '-p' parameter. (case-insensitive)",
+                        help="Run specific programs by name, if none provided, runs all programs, can have > 1 '-p' parameter, case-sensitive",
                         action="append",
                         dest="project")
     parser.add_argument("-l", "--list",

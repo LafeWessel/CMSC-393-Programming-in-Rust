@@ -21,7 +21,7 @@ fn main() {
 
     let mut results :Vec<Vec<RunData<String>>> = vec![vec![]];
     let mut index:usize = 0;
-    let files = fs::read_dir(".\\text_files")
+    let files = fs::read_dir("./text_files")
         .unwrap()
         .map(|p| String::from(p.unwrap().path().to_str().unwrap()))
         .filter(|p| p.contains(".txt"))
