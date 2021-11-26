@@ -16,17 +16,8 @@ mod packing_algorithm{
                 starting_space: size
             }
         }
-
-        pub fn get_starting_space(&self) -> u32{
-            self.starting_space
-        }
-
         pub fn add_item(&mut self, space: u32){
             self.space -= space;
-        }
-
-        pub fn get_remaining_space(&self) -> u32{
-            self.space
         }
     }
 
@@ -52,12 +43,30 @@ mod packing_algorithm{
         bins
     }
 
+    /// Place item in Bin with most remaining room
     pub fn worst_fit(list : &[u32], bin_size : u32) -> Vec<Bin>{
-     vec![]
+        let mut bins = vec![Bin::new(bin_size)];
+        for i in list{
+            let most_room = bins.iter().map(|b| b.space).max().unwrap();
+            if *i <= most_room{
+                let mut most = bins.iter_mut().find(|b| b.space == most_room).unwrap();
+                most.add_item(*i);
+            }else{
+                let mut b = Bin::new(bin_size);
+                b.add_item(*i);
+                bins.push(b);
+            }
+        }
+        bins
     }
 
+    /// Sort the array into biggest first, then use worst_fit
     pub fn worst_fit_decreasing(list : &[u32], bin_size : u32) -> Vec<Bin>{
-     vec![]
+        let mut list_sort = list.to_vec();
+        list_sort.sort_unstable();
+        list_sort.reverse();
+
+        worst_fit(&list_sort, bin_size)
     }
 
     pub fn best_fit(list : &[u32], bin_size : u32) -> Vec<Bin>{
@@ -78,7 +87,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests{
-    use crate::packing_algorithm::{Bin, first_fit};
+    use crate::packing_algorithm::{Bin, first_fit, worst_fit, worst_fit_decreasing};
 
     #[test]
     fn test_first_fit(){
@@ -93,7 +102,36 @@ mod tests{
 
         let res = first_fit(&list,10);
         assert_eq!(v,res);
+    }
 
+    #[test]
+    fn test_worst_fit(){
+        let list: [u32;6] = [9,2,3,5,1,5];
+        let mut b1 = Bin::new(10);
+        b1.add_item(10);
+        let mut b2 = Bin::new(10);
+        b2.add_item(10);
+        let mut b3 = Bin::new(10);
+        b3.add_item(5);
+        let v = vec![b1,b2,b3];
+
+        let res = worst_fit(&list,10);
+        assert_eq!(v,res);
+    }
+
+    #[test]
+    fn test_worst_fit_decreasing(){
+        let list: [u32;6] = [9,2,3,5,1,5];
+        let mut b1 = Bin::new(10);
+        b1.add_item(9);
+        let mut b2 = Bin::new(10);
+        b2.add_item(10);
+        let mut b3 = Bin::new(10);
+        b3.add_item(6);
+        let v = vec![b1,b2,b3];
+
+        let res = worst_fit_decreasing(&list,10);
+        assert_eq!(v,res);
     }
 
 }
