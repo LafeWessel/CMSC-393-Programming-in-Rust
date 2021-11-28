@@ -1,0 +1,5 @@
+{
+  "copy_to_container": [
+    "./order_sizes.txt ./order_sizes.txt"
+  ]
+}
