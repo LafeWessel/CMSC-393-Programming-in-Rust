@@ -69,6 +69,12 @@ def run_dockerfile(project_name: str):
     """Run Dockerfile from `project_name` directory"""
     print(f"Running Dockerfile for project {project_name}")
 
+    # ensure that attempt_run is not false
+    data = read_parameters(project_folder=project_name)
+    if "attempt_run" in data.keys() and not data["attempt_run"]:
+        print(f"Not running {project_name}")
+        return
+
     # move into project_name folder
     starting_dir = os.getcwd()
     os.chdir(project_name)
@@ -104,6 +110,11 @@ def build_container(project_name: str):
     # move into project_name folder
     starting_dir = os.getcwd()
     os.chdir(project_name)
+
+    if "Dockerfile" not in os.listdir():
+        print("Unable to find Dockerfile")
+        os.chdir(starting_dir)
+        return
 
     # run: docker build -t project_name .
     cmd = f"docker build -t {project_name.lower()} ."
